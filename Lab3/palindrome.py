@@ -4,10 +4,11 @@ import sys
 
 #str =  sys.argv
 
-str = raw_input("Some input please: ") # or`input("Some...`
+str = raw_input("Enter the word: ") #taking in word from command line
 
-print str
+print str #test to show the word
 
+#function to return true or false
 def palindrome(n):
     return n == n[::-1]
 
