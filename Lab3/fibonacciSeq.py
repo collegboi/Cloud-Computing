@@ -12,5 +12,8 @@ while(value < 1000):
   value = fib(counter)
   counter = counter + 1
 
+print ("Fib Seguence No:")
+print value
+print ("Fib Seguence Index:")
 print counter
 
