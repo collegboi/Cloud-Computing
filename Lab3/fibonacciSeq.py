@@ -8,9 +8,9 @@ def fib(n):
 counter = 0
 value = 0
 
-while(value < 1000):
-  value = fib(counter)
+while(1000 != len(str(value))):
   counter = counter + 1
+  value = fib(counter)
 
 print ("Fib Seguence No:")
 print value
