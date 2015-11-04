@@ -57,8 +57,6 @@ def images_index():
     
     curl -s -X GET -H 'Accept: application/json' http://localhost:8080/images | python -mjson.tool
     """
-    
-    
     if request.args.get('state') == 'running':
     	output = docker('images')
     else:
@@ -74,7 +72,7 @@ def containers_show(id):
 	curl -s -X GET -H 'Accept: application/json' http://localhost:8080/contrainers/id | python -mjson.tool
     """
     if request.args.get('state') == 'running':
-    	output = docker('inspect ' + id)
+    	output = docker('inspect ' , id)
     else:
     	output = docker('inspect', '-a')
     resp = json.dumps(output)
@@ -88,9 +86,9 @@ def containers_log(id):
 
     """
     if request.args.get('state') == 'running':
-    	output = docker('inspect -f %s' % id)
+    	output = docker('logs  -f ',id)
     else:
-    	output = docker('inspect', '-f')
+    	output = docker('logs', '-f')
     	
     resp = json.dumps(docker_logs_to_object(id, output))
     return Response(response=resp, mimetype="application/json")
@@ -188,7 +186,10 @@ def containers_update(id):
     try:
         state = body['state']
         if state == 'running':
-            docker('restart', id)
+        	docker('stop', id)
+        else:
+        	docker('restart', id)
+        	
     except:
         pass
 
