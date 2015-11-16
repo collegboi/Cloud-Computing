@@ -166,7 +166,9 @@ def images_create():
 
     """
     dockerfile = request.files['file']
-    
+	"""
+	docker build --tag="mymod/httpd:v2" --file="/var/docker_projects/mymod/httpd/Dockerfile"
+	"""
     resp = ''
     return Response(response=resp, mimetype="application/json")
 
@@ -204,6 +206,7 @@ def images_update(id):
     curl -s -X PATCH -H 'Content-Type: application/json' http://localhost:8080/images/7f2619ed1768 -d '{"tag": "test:1.0"}'
 
     """
+    docker("tag %s timdocker", %id)
     resp = ''
     return Response(response=resp, mimetype="application/json")
 
