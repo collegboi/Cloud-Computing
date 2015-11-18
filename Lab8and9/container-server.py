@@ -72,12 +72,13 @@ def containers_show(id):
 	curl -s -X GET -H 'Accept: application/json' http://localhost:8080/contrainers/id | python -mjson.tool
     """
     if request.args.get('state') == 'running':
-    	output = docker('inspect ' , id)
+    	output = docker('inspect' , id)
     else:
     	output = docker('inspect', '-a')
-    resp = json.dumps(output)
-
-    return Response(response=resp, mimetype="application/json")
+    	
+    #resp = json.dumps(output)
+	
+    return Response(response=output, mimetype="application/json")
 
 @app.route('/containers/<id>/logs', methods=['GET'])
 def containers_log(id):
@@ -86,9 +87,9 @@ def containers_log(id):
 
     """
     if request.args.get('state') == 'running':
-    	output = docker('logs  -f ',id)
+    	output = docker('logs', id)
     else:
-    	output = docker('logs', '-f')
+    	output = docker('logs')
     	
     resp = json.dumps(docker_logs_to_object(id, output))
     return Response(response=resp, mimetype="application/json")
@@ -99,7 +100,7 @@ def images_remove(id):
     """
     Delete a specific image with ID given from URL parameter
     """
-    docker ('rmi', id)
+    docker ('rmi','-f', id)
     resp = '{"id": "%s"}' % id
     return Response(response=resp, mimetype="application/json")
 
@@ -149,7 +150,7 @@ def images_remove_all():
 	output = docker('images','-q')
 	
 	for image in output.splitlines():
-		docker('rmi ', image)
+		docker('rmi','-f', image)
 	
 	resp = '{"Images": "Removed"}'
 	return Response(response=resp, mimetype="application/json")
@@ -169,7 +170,11 @@ def containers_create():
     body = request.get_json(force=True)
     image = body['image']
     args = ('run', '-d')
-    id = docker(*(args + (image,)))[0:12]
+    if 'public' in body:
+    	public = body['public']
+    	id = docker(*(args + (image ,'-p',public,)))[0:12]
+    else:
+   		id = docker(*(args + (image,)))[0:12]
     return Response(response='{"id": "%s"}' % id, mimetype="application/json")
 
 
