@@ -135,7 +135,7 @@ def images_remove_all():
     Force remove all images - dangerous!
 
     """
-	docker('rmi (docker images -q)');
+	#docker('rmi (docker images -q)')
     resp = '{"Images": "Removed"}'
     return Response(response=resp, mimetype="application/json")
 
@@ -163,13 +163,16 @@ def images_create():
     Create image (from uploaded Dockerfile)
 
     curl -H 'Accept: application/json' -F file=@Dockerfile http://localhost:8080/images
+    docker build --tag="mymod/httpd:v2" --file="/var/docker_projects/mymod/httpd/Dockerfile"
 
     """
     dockerfile = request.files['file']
-	"""
-	docker build --tag="mymod/httpd:v2" --file="/var/docker_projects/mymod/httpd/Dockerfile"
-	"""
-    resp = ''
+    
+    dockerfile.save("~/Cloud-Computing/Lab8and9/")
+	
+	#docker('build -t mydocker ~/Cloud-Computing/Lab8and9')
+	
+    resp = '{"Images": "Uploaded"}'
     return Response(response=resp, mimetype="application/json")
 
 
@@ -206,7 +209,7 @@ def images_update(id):
     curl -s -X PATCH -H 'Content-Type: application/json' http://localhost:8080/images/7f2619ed1768 -d '{"tag": "test:1.0"}'
 
     """
-    docker("tag %s timdocker", %id)
+    docker("tag %s timdocker ", id)
     resp = ''
     return Response(response=resp, mimetype="application/json")
 
