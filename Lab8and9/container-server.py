@@ -125,19 +125,31 @@ def containers_remove_all():
     Force remove all containers - dangerous!
 
     """
-    docker ('rm (docker ps -a -q)')
+    
+    output = docker('ps','-a', '-p')
+    for container in output.splitlines():
+   		docker('stop', container)
+    	docker('rm', container)
+   
     resp = '{"Containers": "Removed"}'
     return Response(response=resp, mimetype="application/json")
 
 @app.route('/images', methods=['DELETE'])
 def images_remove_all():
-    """
+	
+	"""
     Force remove all images - dangerous!
 
     """
-	#docker('rmi (docker images -q)')
-    resp = '{"Images": "Removed"}'
-    return Response(response=resp, mimetype="application/json")
+	
+	output = docker('images','-q')
+	
+	for image in output.splitlines():
+		docker('rmi ', image)
+	
+	resp = '{"Images": "Removed"}'
+	return Response(response=resp, mimetype="application/json")
+  
 
 
 @app.route('/containers', methods=['POST'])
@@ -159,22 +171,24 @@ def containers_create():
 
 @app.route('/images', methods=['POST'])
 def images_create():
-    """
+	
+	"""
     Create image (from uploaded Dockerfile)
 
     curl -H 'Accept: application/json' -F file=@Dockerfile http://localhost:8080/images
     docker build --tag="mymod/httpd:v2" --file="/var/docker_projects/mymod/httpd/Dockerfile"
 
     """
-    dockerfile = request.files['file']
-    
-    dockerfile.save("~/Cloud-Computing/Lab8and9/")
 	
-	#docker('build -t mydocker ~/Cloud-Computing/Lab8and9')
+	dockerfile = request.files['file']
 	
-    resp = '{"Images": "Uploaded"}'
-    return Response(response=resp, mimetype="application/json")
-
+	dockerfile.save("/home/user/Cloud-Computing/Lab8and9/Dockerfile")
+	
+	docker('build -t random1', '/home/user/Cloud-Computing/Lab8and9 .')
+	
+	resp = '{"Images": "Uploaded"}'
+	
+	return Response(response=resp, mimetype="application/json")
 
 
 
@@ -209,6 +223,15 @@ def images_update(id):
     curl -s -X PATCH -H 'Content-Type: application/json' http://localhost:8080/images/7f2619ed1768 -d '{"tag": "test:1.0"}'
 
     """
+    
+    body = request.get_json(force=True)
+    
+    try:
+    	tag = body['value']
+    	docker('tag',id,tag)
+    except:
+    	pass
+    
     docker("tag %s timdocker ", id)
     resp = ''
     return Response(response=resp, mimetype="application/json")
