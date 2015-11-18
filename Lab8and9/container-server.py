@@ -121,18 +121,22 @@ def containers_remove(id):
 
 @app.route('/containers', methods=['DELETE'])
 def containers_remove_all():
-    """
+	
+	"""
     Force remove all containers - dangerous!
 
     """
-    
-    output = docker('ps','-a', '-p')
-    for container in output.splitlines():
-   		docker('stop', container)
-    	docker('rm', container)
+	
+	output = docker('ps','-a', '-p')
+	
+	for container in output.splitlines():
+		docker('stop', container)
+		docker('rm', container)
+	
+	resp = '{"Containers": "Removed"}'
+	
+	return Response(response=resp, mimetype="application/json")
    
-    resp = '{"Containers": "Removed"}'
-    return Response(response=resp, mimetype="application/json")
 
 @app.route('/images', methods=['DELETE'])
 def images_remove_all():
@@ -184,7 +188,7 @@ def images_create():
 	
 	dockerfile.save("/home/user/Cloud-Computing/Lab8and9/Dockerfile")
 	
-	docker('build -t random1', '/home/user/Cloud-Computing/Lab8and9 .')
+	docker('build', '-t', 'random3', '.')
 	
 	resp = '{"Images": "Uploaded"}'
 	
