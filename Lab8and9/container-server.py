@@ -89,7 +89,7 @@ def containers_log(id):
     if request.args.get('state') == 'running':
     	output = docker('logs', id)
     else:
-    	output = docker('logs')
+    	output = docker('logs', id)
     	
     resp = json.dumps(docker_logs_to_object(id, output))
     return Response(response=resp, mimetype="application/json")
@@ -115,7 +115,7 @@ def containers_remove(id):
     	docker ('rm', id)
     	resp = '{"id": "Removed %s"}' % id
     else:
-    	output = docker('rm', '-f')
+    	output = docker('rm', '-f', id)
     	resp = '{"id": "Running %s"}' % id
 
     return Response(response=resp, mimetype="application/json")
@@ -207,7 +207,7 @@ def containers_update(id):
     Update container attributes (support: state=running|stopped)
 
     curl -X PATCH -H 'Content-Type: application/json' http://localhost:8080/containers/b6cd8ea512c8 -d '{"state": "running"}'
-    curl -X PATCH -H 'Content-Type: application/json' http://localhost:8080/containers/b6cd8ea512c8 -d '{"state": "stopped"}'
+    curl -X PATCH -H 'Content-Type: application/json' http://localhost:8080/containers/b6cd8ea512c8 -d '{"state": "nhfgdngnh"}'
 
     """
     body = request.get_json(force=True)
@@ -215,13 +215,14 @@ def containers_update(id):
         state = body['state']
         if state == 'running':
         	docker('stop', id)
+        	resp = '{"Stop id": "%s"}' % id
         else:
         	docker('restart', id)
+        	resp = '{"Restart id": "%s"}' % id
         	
     except:
         pass
 
-    resp = '{"id": "%s"}' % id
     return Response(response=resp, mimetype="application/json")
 
 @app.route('/images/<id>', methods=['PATCH'])
